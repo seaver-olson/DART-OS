@@ -12,6 +12,7 @@ struct task {
     jmp_buf context;
     int priority;
     void (*task_func)();
+    int state;//0 for ready, 1 for running, 2 for blocked, -1 for finished
 };
 
 struct task tasks[MAX_TASKS] = {0};
@@ -19,36 +20,10 @@ int current_task = -1;
 int num_tasks = 0;
 int system_time = 0; // Simulated system time
 
-void task1(); // Forward declarations
+void task1(); 
 void task2();
 void task3();
 
-void task1() {
-    while (1) {
-        printf("Task 1 executing at time %d\n", system_time);
-        usleep(QUANTUM_US / 2);
-        system_time += QUANTUM_US / 2 / 1000;
-        if (setjmp(tasks[current_task].context) == 0) return;
-    }
-}
-
-void task2() {
-    while (1) {
-        printf("Task 2 executing at time %d\n", system_time);
-        usleep(QUANTUM_US / 2);
-        system_time += QUANTUM_US / 2 / 1000;
-        if (setjmp(tasks[current_task].context) == 0) return;
-    }
-}
-
-void task3() {
-    while (1) {
-        printf("Task 3 executing at time %d\n", system_time);
-        usleep(QUANTUM_US / 2);
-        system_time += QUANTUM_US / 2 / 1000;
-        if (setjmp(tasks[current_task].context) == 0) return;
-    }
-}
 
 void task_create(int id, int arrival_time, int priority, void (*task_func)()) {
     if (num_tasks >= MAX_TASKS) return;
@@ -76,11 +51,19 @@ void schedule() {
     }
 
     while (1) {
-        if (setjmp(tasks[current_task].context) == 0) {
+        if (tasks[current_task].state == -1) {
+            printf("Task %d finished\n", tasks[current_task].id);
+            current_task = (current_task + 1) % num_tasks;
+            continue;
+        } else if (setjmp(tasks[current_task].context) == 0) {
             usleep(QUANTUM_US);
             system_time += QUANTUM_US / 1000;
             current_task = (current_task + 1) % num_tasks;
             longjmp(tasks[current_task].context, 1);
+        } else {
+            printf("Task %d is blocked\n", tasks[current_task].id);
+            current_task = (current_task + 1) % num_tasks;
+            return;
         }
     }
 }
@@ -95,4 +78,32 @@ int main() {
     schedule();
 
     return 0;
+}
+
+//tasks
+void task1() {
+    while (1) {
+        printf("Task 1 executing at time %d\n", system_time);
+        usleep(QUANTUM_US / 2); 
+        system_time += QUANTUM_US / 2 / 1000;//increment system time by 0.25 seconds
+        if (setjmp(tasks[current_task].context) == 0) return;
+    }
+}
+
+void task2() {
+    while (1) {
+        printf("Task 2 executing at time %d\n", system_time);
+        usleep(QUANTUM_US / 2);
+        system_time += QUANTUM_US / 2 / 1000;//increment system time by 0.25 seconds
+        if (setjmp(tasks[current_task].context) == 0) return;
+    }
+}
+
+void task3() {
+    while (1) {
+        printf("Task 3 executing at time %d\n", system_time);
+        usleep(QUANTUM_US / 2);
+        system_time += QUANTUM_US / 2 / 1000; //increment system time by 0.25 seconds
+        if (setjmp(tasks[current_task].context) == 0) return;
+    }
 }
