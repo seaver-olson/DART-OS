@@ -2,9 +2,10 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <setjmp.h>
+#include <time.h>
 
 typedef enum {READY, RUNNING, BLOCKED, SUSPENDED, FINISHED} state_t;
-#define MAX_TASKS 10
+#define MAX_TASKS 2000
 #define tSTACK_SIZE 4096 // 4KB 
 #define hSTACK_SIZE 8192 // 8KB
 

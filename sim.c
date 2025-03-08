@@ -7,24 +7,42 @@
 task tasks[MAX_TASKS];
 int num_tasks = 0;
 int curr_task = 0;
+char task_stack[MAX_TASKS][tSTACK_SIZE];
 
+void task_master(int x){
+    //creates x number of tasks for cpu util testing
+    for (int i = 0; i < x; i++){
+        create_task(task1, rand() % 1000);
+    }
+}
 
 int create_task(void (*func)(void), int deadline){
-    if (num_tasks >= MAX_TASKS) return -1;
+    if (num_tasks >= MAX_TASKS){
+        printf("Error: Max number of tasks reached\n");
+        return -1;
+    }
     int id = num_tasks;
     task *t = &tasks[id];
     t->id = id;
     t->state = READY;
     t->func = func;
     t->deadline = deadline;
+
+    // Set the stack pointer in the context to point to the task's stack
+    t->context[5] = (int)(task_stack[id] + tSTACK_SIZE - 1); // Set the stack pointer to the end of the task's stack
+
     if (setjmp(t->context) == 0){
         num_tasks++;
         printf("Task %d created\n", id);
-        return 0;
+    } else {
+        // Task is running, call the function and mark as finished
+        t->func();
+        t->state = FINISHED;
     }
-    printf("Failed to create task\n");
-    return -1;
+    return 0;
 }
+
+
 
 void schedule(){
     if (num_tasks == 0){
@@ -35,9 +53,9 @@ void schedule(){
 }
 
 int main(){
+    srand(time(0));
     create_task(idle, 100000);//.1 seconds 
-    create_task(task1, 1000);
-    create_task(task2, 2000);
+    task_master(10);
     printf("task count: %d\n", num_tasks);
     if (setjmp(tasks[curr_task].context) == 0) {
         printf("Starting scheduler\n");
@@ -56,7 +74,7 @@ void edf() {
     int i, min = -1;//i is current task, min is the task with the earliest deadline
     // Find the task with the earliest deadline
     for (i = 0; i < num_tasks; i++) {
-        if (tasks[i].state == READY) {
+        if (tasks[i].state == 0) {
             if (min == -1 || tasks[i].deadline < tasks[min].deadline) {
                 min = i;
             }
@@ -67,6 +85,12 @@ void edf() {
     //doesnt switch if the current task is the one with the earliest deadline
     if (tasks[curr_task].state == FINISHED || (min != -1 && min != curr_task)) { 
         if (setjmp(tasks[curr_task].context) == 0) {
+            if (tasks[curr_task].state != READY && tasks[curr_task].state != RUNNING) {
+                printf("Error: Attempted to switch to uninitialized task %d\n", curr_task);
+                return;
+            }
+            tasks[curr_task].state = READY;
+            printf("Switching from task %d to task %d\n", curr_task, min);
             curr_task = min;
             tasks[curr_task].state = RUNNING;
             longjmp(tasks[curr_task].context, 1);
