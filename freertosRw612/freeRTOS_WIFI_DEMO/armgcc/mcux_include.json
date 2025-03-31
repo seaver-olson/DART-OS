@@ -1,0 +1,33 @@
+{
+  "version": 7,
+  "cmakeMinimumRequired": {
+    "major": 3
+  },
+  "configurePresets": [
+    {
+      "name": "flash_release-env",
+      "displayName": "flash_release-env",
+      "hidden": true,
+      "environment": {
+        "ARMGCC_DIR": "/Users/solson16/.mcuxpressotools/arm-gnu-toolchain-13.2.Rel1-darwin-arm64-arm-none-eabi",
+        "SdkRootDirPath": "/Users/solson16/Downloads/SDK_24_12_00_FRDM-RW612",
+        "POSTPROCESS_UTILITY": "/Users/solson16/.mcuxpressotools/mcux-fixelf/mcux-fixelf",
+        "MCUX_VENV_PATH": "/Users/solson16/.mcuxpressotools/.venv/bin",
+        "PATH": "$env{MCUX_VENV_PATH}:$penv{PATH}"
+      }
+    },
+    {
+      "name": "flash_debug-env",
+      "displayName": "flash_debug-env",
+      "hidden": true,
+      "environment": {
+        "ARMGCC_DIR": "/Users/solson16/.mcuxpressotools/arm-gnu-toolchain-13.2.Rel1-darwin-arm64-arm-none-eabi",
+        "SdkRootDirPath": "/Users/solson16/Downloads/SDK_24_12_00_FRDM-RW612",
+        "POSTPROCESS_UTILITY": "/Users/solson16/.mcuxpressotools/mcux-fixelf/mcux-fixelf",
+        "MCUX_VENV_PATH": "/Users/solson16/.mcuxpressotools/.venv/bin",
+        "PATH": "$env{MCUX_VENV_PATH}:$penv{PATH}"
+      }
+    }
+  ],
+  "buildPresets": []
+}

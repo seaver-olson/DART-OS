@@ -1,0 +1,20 @@
+{
+  "version": "25.2",
+  "toolchainPath": "/Users/solson16/.mcuxpressotools/arm-gnu-toolchain-13.2.Rel1-darwin-arm64-arm-none-eabi",
+  "linkedProjects": [],
+  "trustZoneType": "none",
+  "multicoreType": "none",
+  "debug": {
+    "linkserver": {},
+    "pemicro": {},
+    "segger": {}
+  },
+  "projectType": "sdk-freestanding",
+  "sdk": {
+    "version": "24.12.00",
+    "path": "/Users/solson16/Downloads/SDK_24_12_00_FRDM-RW612",
+    "boardId": "frdmrw612",
+    "deviceId": "RW612",
+    "coreId": "cm33_RW612"
+  }
+}
